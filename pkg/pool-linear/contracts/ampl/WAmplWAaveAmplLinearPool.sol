@@ -21,7 +21,7 @@ import "../LinearPool.sol";
 
 /**
  * @title WAmplWAaveAmplLinearPool
- * @author @aalavandhan1984 (eng@fragments.org)
+ * @author @aalavandhan1984 (dev-support@fragments.org)
  * @notice This linear pool is between wAMPL (wrapped AMPL)
  *         and wAaveAMPL (wrapped aaveAMPL, or unbuttoned aAMPL).
  * @dev The exchange rate between both is calculated based on:
