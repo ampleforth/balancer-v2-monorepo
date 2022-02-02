@@ -72,6 +72,8 @@ contract WAmplWAaveAmplLinearPool is LinearPool {
      * @dev This function returns the exchange rate between the main token and
      *      the wrapped token as a 18 decimal fixed point number.
      *      In our case, its the exchange rate between wAMPL and wAaveAMPL.
+     *      (i.e. The number of wAaveAMPL for each WAMPL)
+     * ```
      */
     function _getWrappedTokenRate() internal view override returns (uint256) {
         // 1e18 wAMPL = r1 AMPL
