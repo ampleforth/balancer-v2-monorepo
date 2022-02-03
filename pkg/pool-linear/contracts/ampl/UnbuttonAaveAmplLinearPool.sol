@@ -20,20 +20,21 @@ import "../interfaces/IAToken.sol";
 import "../LinearPool.sol";
 
 /**
- * @title WAmplWAaveAmplLinearPool
+ * @title UnbuttonAaveAmplLinearPool
  * @author @aalavandhan1984 (dev-support@fragments.org)
  * @notice This linear pool is between wAMPL (wrapped AMPL)
- *         and wAaveAMPL (wrapped aaveAMPL, or unbuttoned aAMPL).
+ *         and wAaveAMPL (wrapped aaveAMPL).
  * @dev The exchange rate between both is calculated based on:
  *        - the rate between wAMPL and AMPL
  *        - the rate between AMPL and aaveAMPL
  *        - the rate between wAaveAMPL and aaveAMPL
  *
  *      Both AMPL and aaveAMPL are rebasing assets and are wrapped into a non-rebasing version
- *      using warappers which implement the IButtonWrapper interface.
+ *      using the unbutton wrapper.
+ *      https://github.com/buttonwood-protocol/button-wrappers/blob/main/contracts/UnbuttonToken.sol
  *      https://github.com/buttonwood-protocol/button-wrappers/blob/main/contracts/interfaces/IButtonWrapper.sol
  */
-contract WAmplWAaveAmplLinearPool is LinearPool {
+contract UnbuttonAaveAmplLinearPool is LinearPool {
     address private immutable _wAaveAMPL;
 
     constructor(
@@ -63,9 +64,18 @@ contract WAmplWAaveAmplLinearPool is LinearPool {
     {
         // NOTE: The linear pool's getWrappedToken() function is marked external
         // and thus the the reference to the wAaveAMPL token can't be queried
-        // from methdos in this subclass. Thus using a redundant storage variable
+        // from methods in this subclass. Thus using a redundant storage variable
         // to store the reference.
         _wAaveAMPL = address(wAaveAMPL);
+        
+        address mainUnderlying = IButtonWrapper(address(wAMPL))
+            .underlying();
+
+        address wrappedUnderlying = 
+            IAToken(IButtonWrapper(address(wAaveAMPL)).underlying())
+            .UNDERLYING_ASSET_ADDRESS();
+
+        _require(mainUnderlying == wrappedUnderlying, Errors.TOKENS_MISMATCH);
     }
 
     /*

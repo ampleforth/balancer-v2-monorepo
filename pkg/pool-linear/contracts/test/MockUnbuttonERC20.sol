@@ -168,3 +168,15 @@ contract MockUnbuttonERC20 is ERC20 {
         return (amount * totalUnderlying_) / totalSupply;
     }
 }
+
+contract MockAaveAMPLToken is MockUnbuttonERC20 {
+     constructor(
+        address underlying_,
+        string memory name_,
+        string memory symbol_
+    ) MockUnbuttonERC20(underlying_, name_, symbol_) { }
+
+    function UNDERLYING_ASSET_ADDRESS() external view returns (address) {
+        return underlying;
+    }
+}
