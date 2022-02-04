@@ -48,7 +48,7 @@ async function setupWrappedTokensAndLP(w1Rate: BigNumberish, w2Rate: BigNumberis
   await wAaveAMPLContract.connect(deployer).mint(fp(1));
 
   const vault = await Vault.create();
-  const poolContract = await deploy('UnbuttonAaveAmplLinearPool', {
+  const poolContract = await deploy('UnbuttonAaveLinearPool', {
     args: [
       vault.address,
       'Balancer Pool Token',
@@ -66,7 +66,7 @@ async function setupWrappedTokensAndLP(w1Rate: BigNumberish, w2Rate: BigNumberis
   return pool;
 }
 
-describe('UnbuttonAaveAmplLinearPool', function () {
+describe('UnbuttonAaveLinearPool', function () {
   describe('getWrappedTokenRate with different wrapper exchange rates', () => {
     it('returns the expected value', async () => {
       const pool = await setupWrappedTokensAndLP('1000000000', '2000000000');
@@ -129,7 +129,7 @@ describe('UnbuttonAaveAmplLinearPool', function () {
 
       const vault = await Vault.create();
 
-      const deployTX = deploy('UnbuttonAaveAmplLinearPool', {
+      const deployTX = deploy('UnbuttonAaveLinearPool', {
         args: [
           vault.address,
           'Balancer Pool Token',
