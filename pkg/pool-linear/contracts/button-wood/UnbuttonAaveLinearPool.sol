@@ -20,21 +20,25 @@ import "../interfaces/IAToken.sol";
 import "../LinearPool.sol";
 
 /**
- * @title UnbuttonAaveAmplLinearPool
+ * @title UnbuttonAaveLinearPool
+ * 
  * @author @aalavandhan1984 (dev-support@fragments.org)
- * @notice This linear pool is between wAMPL (wrapped AMPL)
- *         and wAaveAMPL (wrapped aaveAMPL).
- * @dev The exchange rate between both is calculated based on:
+ * 
+ * @notice This linear pool is between any Unbutton ERC-20 (eg, wrapped AMPL)
+ *         and it's corresponding Unbutton aToken (eg, wrapped aaveAMPL).
+ * 
+ * @dev In the comments we assume that the pool is between {wAMPL - wAaveAMPL},
+ *      however this linear pool will support any rebasing token and it's
+ *      aToken counterpart both of which are wrapped using the unbutton wrapper.
+ * 
+ *      For {the wAMPL - wAaveAMPL} pool, the exchange rate is calculated based on:
  *        - the rate between wAMPL and AMPL
  *        - the rate between AMPL and aaveAMPL
  *        - the rate between wAaveAMPL and aaveAMPL
  *
- *      Both AMPL and aaveAMPL are rebasing assets and are wrapped into a non-rebasing version
- *      using the unbutton wrapper.
- *      https://github.com/buttonwood-protocol/button-wrappers/blob/main/contracts/UnbuttonToken.sol
- *      https://github.com/buttonwood-protocol/button-wrappers/blob/main/contracts/interfaces/IButtonWrapper.sol
+ *      Unbutton wrapper: https://github.com/buttonwood-protocol/button-wrappers/blob/main/contracts/UnbuttonToken.sol
  */
-contract UnbuttonAaveAmplLinearPool is LinearPool {
+contract UnbuttonAaveLinearPool is LinearPool {
     address private immutable _wAaveAMPL;
 
     constructor(
