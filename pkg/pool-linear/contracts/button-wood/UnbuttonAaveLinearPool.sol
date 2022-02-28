@@ -78,19 +78,20 @@ contract UnbuttonAaveLinearPool is LinearPool {
      * @dev This function returns the exchange rate between the main token and
      *      the wrapped token as a 18 decimal fixed point number.
      *      In our case, its the exchange rate between wAMPL and wAaveAMPL.
-     *      (i.e. The number of wAaveAMPL for each WAMPL)
-     * ```
+     *      (i.e. The number of wAMPL for each wAaveAMPL)
+     *      All UnbuttonTokens have 18 decimals, so it is not necessary to
+     *      query decimals for the main token or wrapped token.
      */
     function _getWrappedTokenRate() internal view override returns (uint256) {
-        // 1e18 wAMPL = r1 AMPL
-        uint256 r1 = IButtonWrapper(getMainToken()).wrapperToUnderlying(FixedPoint.ONE);
+        // 1e18 wAaveAMPL = r1 aAMPL
+        uint256 r1 = IButtonWrapper(getWrappedToken()).wrapperToUnderlying(FixedPoint.ONE);
 
-        // r1 AMPL =  r1 aAMPL (AMPL and aAMPL have a 1:1 exchange rate)
+        // r1 aAMPL = r1 AMPL (AMPL and aAMPL have a 1:1 exchange rate)
 
-        // r1 aAMPL = r2 wAaveAMPL
-        uint256 r2 = IButtonWrapper(getWrappedToken()).underlyingToWrapper(r1);
+        // r1 AMPL = r2 wAMPL
+        uint256 r2 = IButtonWrapper(getMainToken()).underlyingToWrapper(r1);
 
-        // 1e18 wAMPL = r2 wAaveAMPL
+        // 1e18 wAaveAMPL = r2 wAMPL
         return r2;
     }
 }

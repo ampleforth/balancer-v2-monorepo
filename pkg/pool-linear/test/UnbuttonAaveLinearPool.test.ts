@@ -68,23 +68,30 @@ async function setupWrappedTokensAndLP(w1Rate: BigNumberish, w2Rate: BigNumberis
 
 describe('UnbuttonAaveLinearPool', function () {
   describe('getWrappedTokenRate with different wrapper exchange rates', () => {
+    // The rate passed into UnbuttonToken initialization is wrapped tokens per
+    // underlying token (i.e., backwards from Balancer's perspective)
+    // A rate of 2 passed to the wAaveAMPL token signifies 0.5 aAMPL per wAaveAMPL
+    //
+    // Whereas the rate defined by the pool is main tokens per wrapped token
+    // (i.e., backwards from Ampleforth's perspective)
+    // An expected rate of 2 returned from the pool signifies 2 wAMPL per wAaveAMPL
     it('returns the expected value', async () => {
-      const pool = await setupWrappedTokensAndLP('1000000000', '2000000000');
+      const pool = await setupWrappedTokensAndLP(bn(1e9), bn(5e8));
       expect(await pool.getWrappedTokenRate()).to.be.eq(fp(2));
     });
 
     it('returns the expected value', async () => {
-      const pool = await setupWrappedTokensAndLP('2000000000', '1000000000');
+      const pool = await setupWrappedTokensAndLP(bn(5e8), bn(1e9));
       expect(await pool.getWrappedTokenRate()).to.be.eq(fp(0.5));
     });
 
     it('returns the expected value', async () => {
-      const pool = await setupWrappedTokensAndLP('1000000000', '10000000000');
+      const pool = await setupWrappedTokensAndLP(bn(1e10), bn(1e9));
       expect(await pool.getWrappedTokenRate()).to.be.eq(fp(10));
     });
 
     it('returns the expected value', async () => {
-      const pool = await setupWrappedTokensAndLP('10000000000', '1000000000');
+      const pool = await setupWrappedTokensAndLP(bn(1e9), bn(1e10));
       expect(await pool.getWrappedTokenRate()).to.be.eq(fp(0.1));
     });
   });
