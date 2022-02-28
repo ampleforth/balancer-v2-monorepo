@@ -10,7 +10,7 @@ import { actionId } from '@balancer-labs/v2-helpers/src/models/misc/actions';
 import { deploy } from '@balancer-labs/v2-helpers/src/contract';
 import { PoolSpecialization } from '@balancer-labs/balancer-js';
 import { BigNumberish, fp } from '@balancer-labs/v2-helpers/src/numbers';
-import { ZERO_ADDRESS } from '@balancer-labs/v2-helpers/src/constants';
+import { ANY_ADDRESS, ZERO_ADDRESS } from '@balancer-labs/v2-helpers/src/constants';
 import { Account } from '@balancer-labs/v2-helpers/src/models/types/types';
 import TypesConverter from '@balancer-labs/v2-helpers/src/models/types/TypesConverter';
 
@@ -125,7 +125,7 @@ describe('BasePool', function () {
 
     it('tracks authorizer changes in the vault', async () => {
       const action = await actionId(vault, 'setAuthorizer');
-      await authorizer.connect(admin).grantRoleGlobally(action, admin.address);
+      await authorizer.connect(admin).grantPermissions([action], admin.address, [ANY_ADDRESS]);
 
       await vault.connect(admin).setAuthorizer(other.address);
 
@@ -152,6 +152,24 @@ describe('BasePool', function () {
           expect(await pool.getActionId(selector)).to.not.equal(await otherPool.getActionId(selector));
         });
       });
+    });
+  });
+
+  describe('protocol fees', () => {
+    let pool: Contract;
+
+    sharedBeforeEach(async () => {
+      pool = await deployBasePool();
+    });
+
+    it('mints bpt to the protocol fee collector', async () => {
+      const feeCollector = await pool.getProtocolFeesCollector();
+
+      const balanceBefore = await pool.balanceOf(feeCollector);
+      await pool.payProtocolFees(fp(42));
+      const balanceAfter = await pool.balanceOf(feeCollector);
+
+      expect(balanceAfter.sub(balanceBefore)).to.equal(fp(42));
     });
   });
 
@@ -229,7 +247,7 @@ describe('BasePool', function () {
         context('when the sender has the set fee permission in the authorizer', () => {
           sharedBeforeEach('grant permission', async () => {
             const action = await actionId(pool, 'setSwapFeePercentage');
-            await authorizer.connect(admin).grantRoleGlobally(action, sender.address);
+            await authorizer.connect(admin).grantPermissions([action], sender.address, [ANY_ADDRESS]);
           });
 
           itSetsSwapFeePercentage();
@@ -268,7 +286,7 @@ describe('BasePool', function () {
           context('when the sender has the set fee permission in the authorizer', () => {
             sharedBeforeEach(async () => {
               const action = await actionId(pool, 'setSwapFeePercentage');
-              await authorizer.connect(admin).grantRoleGlobally(action, sender.address);
+              await authorizer.connect(admin).grantPermissions([action], sender.address, [ANY_ADDRESS]);
             });
 
             itRevertsWithUnallowedSender();
@@ -344,7 +362,7 @@ describe('BasePool', function () {
       context('when the sender has the pause permission in the authorizer', () => {
         sharedBeforeEach('grant permission', async () => {
           const action = await actionId(pool, 'setPaused');
-          await authorizer.connect(admin).grantRoleGlobally(action, sender.address);
+          await authorizer.connect(admin).grantPermissions([action], sender.address, [ANY_ADDRESS]);
         });
 
         itCanPause();
@@ -383,7 +401,7 @@ describe('BasePool', function () {
         context('when the sender has the pause permission in the authorizer', () => {
           sharedBeforeEach(async () => {
             const action = await actionId(pool, 'setPaused');
-            await authorizer.connect(admin).grantRoleGlobally(action, sender.address);
+            await authorizer.connect(admin).grantPermissions([action], sender.address, [ANY_ADDRESS]);
           });
 
           itCanPause();

@@ -19,7 +19,7 @@ import "@balancer-labs/v2-solidity-utils/contracts/helpers/BalancerErrors.sol";
 import "@balancer-labs/v2-solidity-utils/contracts/helpers/ERC20Helpers.sol";
 import "@balancer-labs/v2-solidity-utils/contracts/math/FixedPoint.sol";
 
-import "@balancer-labs/v2-pool-utils/contracts/BasePool.sol";
+import "@balancer-labs/v2-pool-utils/contracts/LegacyBasePool.sol";
 import "@balancer-labs/v2-pool-utils/contracts/interfaces/IRateProvider.sol";
 import "@balancer-labs/v2-pool-utils/contracts/rates/PriceRateCache.sol";
 
@@ -47,7 +47,7 @@ import "./LinearPoolUserData.sol";
  * traders whose swaps return the balance to the desired region.
  * The net revenue via fees is expected to be zero: all collected fees are used to pay for this 'rebalancing'.
  */
-abstract contract LinearPool is BasePool, IGeneralPool, IRateProvider {
+abstract contract LinearPool is LegacyBasePool, IGeneralPool, IRateProvider {
     using WordCodec for bytes32;
     using FixedPoint for uint256;
     using PriceRateCache for bytes32;
@@ -110,7 +110,7 @@ abstract contract LinearPool is BasePool, IGeneralPool, IRateProvider {
         uint256 bufferPeriodDuration,
         address owner
     )
-        BasePool(
+        LegacyBasePool(
             vault,
             IVault.PoolSpecialization.GENERAL,
             name,
@@ -151,7 +151,7 @@ abstract contract LinearPool is BasePool, IGeneralPool, IRateProvider {
         return address(_mainToken);
     }
 
-    function getWrappedToken() external view returns (address) {
+    function getWrappedToken() public view returns (address) {
         return address(_wrappedToken);
     }
 
@@ -570,6 +570,9 @@ abstract contract LinearPool is BasePool, IGeneralPool, IRateProvider {
         return _getWrappedTokenRate();
     }
 
+    /**
+     * @dev Should be 1e18 for the subsequent calculation of the wrapper token scaling factor.
+     */
     function _getWrappedTokenRate() internal view virtual returns (uint256);
 
     function getTargets() public view returns (uint256 lowerTarget, uint256 upperTarget) {

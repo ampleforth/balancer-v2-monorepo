@@ -173,13 +173,13 @@ export default class WeightedPool {
   }
 
   async isOracleEnabled(): Promise<boolean> {
-    if (this.poolType != WeightedPoolType.WEIGHTED_POOL_2TOKENS)
+    if (this.poolType != WeightedPoolType.ORACLE_WEIGHTED_POOL)
       throw Error('Cannot query misc data for non-2-tokens weighted pool');
     return (await this.getMiscData()).oracleEnabled;
   }
 
   async getMiscData(): Promise<MiscData> {
-    if (this.poolType != WeightedPoolType.WEIGHTED_POOL_2TOKENS)
+    if (this.poolType != WeightedPoolType.ORACLE_WEIGHTED_POOL)
       throw Error('Cannot query misc data for non-2-tokens weighted pool');
     return this.instance.getMiscData();
   }
@@ -598,7 +598,7 @@ export default class WeightedPool {
 
   async pause(): Promise<void> {
     const action = await actionId(this.instance, 'setPaused');
-    await this.vault.grantRoleGlobally(action);
+    await this.vault.grantPermissionsGlobally([action]);
     await this.instance.setPaused(true);
   }
 
@@ -622,6 +622,14 @@ export default class WeightedPool {
   async setSwapEnabled(from: SignerWithAddress, swapEnabled: boolean): Promise<ContractTransaction> {
     const pool = this.instance.connect(from);
     return pool.setSwapEnabled(swapEnabled);
+  }
+
+  async setManagementSwapFeePercentage(
+    from: SignerWithAddress,
+    managementFee: BigNumberish
+  ): Promise<ContractTransaction> {
+    const pool = this.instance.connect(from);
+    return pool.setManagementSwapFeePercentage(managementFee);
   }
 
   async addAllowedAddress(from: SignerWithAddress, member: string): Promise<ContractTransaction> {

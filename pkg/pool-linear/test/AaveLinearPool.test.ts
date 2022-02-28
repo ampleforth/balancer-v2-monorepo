@@ -27,12 +27,8 @@ describe('AaveLinearPool', function () {
   });
 
   sharedBeforeEach('deploy tokens', async () => {
-    const [deployer] = await ethers.getSigners();
-
     mainToken = await Token.create('DAI');
-    const wrappedTokenInstance = await deploy('MockStaticAToken', {
-      args: [deployer.address, 'cDAI', 'cDAI', 18, mainToken.address],
-    });
+    const wrappedTokenInstance = await deploy('MockStaticAToken', { args: ['cDAI', 'cDAI', 18, mainToken.address] });
     wrappedToken = await Token.deployedAt(wrappedTokenInstance.address);
 
     tokens = new TokenList([mainToken, wrappedToken]).sort();
@@ -75,6 +71,24 @@ describe('AaveLinearPool', function () {
       // We now double the reserve's normalised income to change the exchange rate to 2:1
       await mockLendingPool.setReserveNormalizedIncome(bn(2e27));
       expect(await pool.getWrappedTokenRate()).to.be.eq(fp(2));
+    });
+  });
+
+  describe('constructor', () => {
+    it('reverts if the mainToken is not the ASSET of the wrappedToken', async () => {
+      const otherToken = await Token.create('USDC');
+
+      await expect(
+        poolFactory.create(
+          'Balancer Pool Token',
+          'BPT',
+          otherToken.address,
+          wrappedToken.address,
+          bn(0),
+          POOL_SWAP_FEE_PERCENTAGE,
+          owner.address
+        )
+      ).to.be.revertedWith('TOKENS_MISMATCH');
     });
   });
 });

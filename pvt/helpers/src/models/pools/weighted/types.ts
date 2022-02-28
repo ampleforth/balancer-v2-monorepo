@@ -10,7 +10,7 @@ import Vault from '../../vault/Vault';
 
 export enum WeightedPoolType {
   WEIGHTED_POOL = 0,
-  WEIGHTED_POOL_2TOKENS,
+  ORACLE_WEIGHTED_POOL,
   LIQUIDITY_BOOTSTRAPPING_POOL,
   MANAGED_POOL,
 }
@@ -26,7 +26,7 @@ export type RawWeightedPoolDeployment = {
   swapEnabledOnStart?: boolean;
   mustAllowlistLPs?: boolean;
   managementSwapFeePercentage?: BigNumberish;
-  owner?: string;
+  owner?: Account;
   admin?: SignerWithAddress;
   from?: SignerWithAddress;
   vault?: Vault;
@@ -210,6 +210,7 @@ export type ManagedPoolRights = {
   canSetMustAllowlistLPs: boolean;
   canSetCircuitBreakers: boolean;
   canChangeTokens: boolean;
+  canChangeMgmtSwapFee: boolean;
 };
 
 export type ManagedPoolParams = {
