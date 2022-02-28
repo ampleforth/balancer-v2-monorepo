@@ -20,7 +20,7 @@ async function setupWrappedTokensAndLP(w1Rate: BigNumberish, w2Rate: BigNumberis
   const deployerAddress = await deployer.getAddress();
 
   const ampl = await deploy('TestToken', {
-    args: [deployerAddress, 'Mock Ampleforth', 'AMPL', 9],
+    args: ['Mock Ampleforth', 'AMPL', 9],
   });
   await ampl.mint(deployerAddress, amplFP(2000), { from: deployerAddress });
 
@@ -95,12 +95,12 @@ describe('UnbuttonAaveLinearPool', function () {
       const deployerAddress = await deployer.getAddress();
 
       const ampl = await deploy('TestToken', {
-        args: [deployerAddress, 'Mock Ampleforth', 'AMPL', 9],
+        args: ['Mock Ampleforth', 'AMPL', 9],
       });
       await ampl.mint(deployerAddress, amplFP(5), { from: deployerAddress });
 
       const dai = await deploy('TestToken', {
-        args: [deployerAddress, 'DAI', 'DAI', 9],
+        args: ['DAI', 'DAI', 9],
       });
       await dai.mint(deployerAddress, amplFP(5), { from: deployerAddress });
 
