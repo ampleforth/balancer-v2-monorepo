@@ -39,8 +39,6 @@ import "../LinearPool.sol";
  *      Unbutton wrapper: https://github.com/buttonwood-protocol/button-wrappers/blob/main/contracts/UnbuttonToken.sol
  */
 contract UnbuttonAaveLinearPool is LinearPool {
-    address private immutable _wAaveAMPL;
-
     constructor(
         IVault vault,
         string memory name,
@@ -66,12 +64,6 @@ contract UnbuttonAaveLinearPool is LinearPool {
             owner
         )
     {
-        // NOTE: The linear pool's getWrappedToken() function is marked external
-        // and thus the the reference to the wAaveAMPL token can't be queried
-        // from methods in this subclass. Thus using a redundant storage variable
-        // to store the reference.
-        _wAaveAMPL = address(wAaveAMPL);
-        
         address mainUnderlying = IButtonWrapper(address(wAMPL))
             .underlying();
 
@@ -96,7 +88,7 @@ contract UnbuttonAaveLinearPool is LinearPool {
         // r1 AMPL =  r1 aAMPL (AMPL and aAMPL have a 1:1 exchange rate)
 
         // r1 aAMPL = r2 wAaveAMPL
-        uint256 r2 = IButtonWrapper(_wAaveAMPL).underlyingToWrapper(r1);
+        uint256 r2 = IButtonWrapper(getWrappedToken()).underlyingToWrapper(r1);
 
         // 1e18 wAMPL = r2 wAaveAMPL
         return r2;
