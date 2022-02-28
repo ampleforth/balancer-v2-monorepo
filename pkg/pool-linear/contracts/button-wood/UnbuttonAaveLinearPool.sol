@@ -83,7 +83,7 @@ contract UnbuttonAaveLinearPool is LinearPool {
      */
     function _getWrappedTokenRate() internal view override returns (uint256) {
         // 1e18 wAMPL = r1 AMPL
-        uint256 r1 = IButtonWrapper(getMainToken()).wrapperToUnderlying(10**18);
+        uint256 r1 = IButtonWrapper(getMainToken()).wrapperToUnderlying(FixedPoint.ONE);
 
         // r1 AMPL =  r1 aAMPL (AMPL and aAMPL have a 1:1 exchange rate)
 
